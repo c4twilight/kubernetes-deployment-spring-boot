@@ -1,15 +1,18 @@
-# Use the official OpenJDK 17 Alpine image as the base image
-FROM openjdk:17-alpine
+# Build stage
+FROM maven:3.9.9-eclipse-temurin-17 AS builder
+WORKDIR /workspace
+COPY pom.xml .
+COPY .mvn .mvn
+COPY mvnw mvnw
+COPY mvnw.cmd mvnw.cmd
+COPY src src
+RUN chmod +x mvnw && ./mvnw -q -DskipTests package
 
-# Set the working directory inside the container to /app
+# Runtime stage
+FROM eclipse-temurin:17-jre
 WORKDIR /app
-
-# Copy the JAR file from the local machine's 'target' directory to the container's /app directory
-COPY target/backend-demo-app.jar app.jar
-
-# Expose port 9090 to the outside world. This does not actually publish the port, but it serves as documentation
+RUN useradd -r -u 1001 appuser
+COPY --from=builder /workspace/target/backend-demo-app.jar app.jar
 EXPOSE 9090
-
-# Define the command to run when the container starts
-# This runs the Spring Boot application with an active Kubernetes profile
+USER appuser
 ENTRYPOINT ["java", "-Dspring.profiles.active=k8s", "-jar", "app.jar"]

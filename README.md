@@ -1,23 +1,46 @@
-<H2>🔥From Localhost to the Cloud: Deploying Spring Boot + MySQL App on Kubernetes with Docker Desktop- A Beginner Guide</H2>
+# Spring Boot + MySQL Kubernetes Deployment
 
-A Beginner's Step-by-Step Guide to Deploying Spring Boot application with MySQL on Kubernetes via Docker Hub
+Production-style sample for deploying a Spring Boot backend with MySQL using Docker and Kubernetes.
 
-In this beginner-friendly tutorial, you will learn:
+## Stack
+- Java 17, Spring Boot
+- Spring Data JPA, Validation, Actuator
+- MySQL
+- Docker, Docker Compose, Kubernetes
 
-✔ Basic About Kubernetes: A detailed description about Kubernetes, Kubernetes Clusters (single & multi-nodes), available Kubernetes clusters in the market.
+Learning-focused comments in source are intentionally preserved.
 
-✔ Building Your Application Image: Step-by-step instructions on building a Docker image for your application using the Dockerfile.
+## Project Structure
+- `backend-demo-app/`: Spring Boot service
+- `backend-demo-app/kubernetes-deployments/`: Kubernetes manifests
 
-✔ Pushing to Docker Hub Repository: Explore how to push your application image to Docker Hub, making it accessible for deployment.
+## Local Run (Docker Compose)
+```bash
+cd backend-demo-app
+docker compose up --build
+```
 
-✔ Pulling and Deploying on Kubernetes: Learn the ropes of pulling your application image from Docker Hub and deploying it on a Kubernetes cluster.
+API base URL: `http://localhost:9090/api/v1`
 
-But that's not all! Dive deeper into efficiency with:
+## Kubernetes Deploy
+Apply manifests in this order:
 
-✔ Streamlined Local Development: Master the art of building images and containers effortlessly for local development using Docker Compose.
-This guide offers a comprehensive solution - from building to containerizing and deploying your Spring Boot application. Make your mark in the cloud computing landscape with newfound knowledge and skills.
+```bash
+kubectl apply -f backend-demo-app/kubernetes-deployments/backend-demo-secret.yaml
+kubectl apply -f backend-demo-app/kubernetes-deployments/backend-demo-configmap.yaml
+kubectl apply -f backend-demo-app/kubernetes-deployments/mysql-deployment.yaml
+kubectl apply -f backend-demo-app/kubernetes-deployments/mysql-service.yaml
+kubectl apply -f backend-demo-app/kubernetes-deployments/backend-demo-app-deployment.yaml
+kubectl apply -f backend-demo-app/kubernetes-deployments/backend-demo-app-service.yaml
+```
 
-👉 Follow this blog for step by step tutorial:
+## Health Endpoints
+- `/actuator/health`
+- `/actuator/health/liveness`
+- `/actuator/health/readiness`
 
-https://medium.com/gitconnected/from-localhost-to-the-cloud-deploying-spring-boot-mysql-app-on-kubernetes-with-docker-desktop-a-8c51f9cd23fa
-
+## Test
+```bash
+cd backend-demo-app
+./mvnw test
+```

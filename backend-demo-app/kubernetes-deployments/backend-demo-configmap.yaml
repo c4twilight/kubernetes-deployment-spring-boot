@@ -1,0 +1,6 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: backend-demo-config
+data:
+  spring_datasource_url: jdbc:mysql://mysql-service:3306/message_db

@@ -2,6 +2,7 @@ package com.kubernetes.demo.models;
 
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -21,6 +22,8 @@ public class Message implements Serializable {
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "ID")
     private Long id;
+    @NotBlank(message = "messageText is required")
+    @Column(nullable = false)
     private String messageText;
 
 }
