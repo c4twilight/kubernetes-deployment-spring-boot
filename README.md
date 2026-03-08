@@ -34,6 +34,11 @@ kubectl apply -f backend-demo-app/kubernetes-deployments/backend-demo-app-deploy
 kubectl apply -f backend-demo-app/kubernetes-deployments/backend-demo-app-service.yaml
 ```
 
+## Configuration Flow (K8s)
+- Deployment sets `MYSQL_HOST`, `MYSQL_PORT`, `MYSQL_DB`, `MYSQL_USERNAME`, `MYSQL_PASSWORD`.
+- `application-k8s.yaml` reads these values via `${MYSQL_*}` placeholders.
+- Username/password come from `backend-demo-secrets` (Secret manifest).
+
 ## Health Endpoints
 - `/actuator/health`
 - `/actuator/health/liveness`
