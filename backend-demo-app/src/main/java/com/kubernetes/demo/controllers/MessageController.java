@@ -2,7 +2,7 @@ package com.kubernetes.demo.controllers;
 
 import com.kubernetes.demo.models.Message;
 import com.kubernetes.demo.services.MessageService;
-import org.springframework.beans.factory.annotation.Autowired;
+import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -12,25 +12,20 @@ import java.util.List;
 @RequestMapping("/api/v1")
 public class MessageController {
 
-    @Autowired
-    MessageService messageService;
+    private final MessageService messageService;
+
+    public MessageController(MessageService messageService) {
+        this.messageService = messageService;
+    }
 
     @PostMapping(value = "/message/send")
-    public ResponseEntity<Message> sendMessage(@RequestBody Message message){
-        try{
-            return ResponseEntity.ok(messageService.sendMessage(message));
-        } catch (Exception e){
-            throw new RuntimeException(e.getMessage());
-        }
+    public ResponseEntity<Message> sendMessage(@Valid @RequestBody Message message){
+        return ResponseEntity.ok(messageService.sendMessage(message));
     }
 
     @GetMapping("/messages")
     public ResponseEntity<List<Message>> getAllMessages(){
-        try{
-            return ResponseEntity.ok(messageService.getAllMessages());
-        } catch (Exception e){
-            throw new RuntimeException(e.getMessage());
-        }
+        return ResponseEntity.ok(messageService.getAllMessages());
     }
 
 }

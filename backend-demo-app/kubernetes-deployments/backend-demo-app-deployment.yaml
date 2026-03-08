@@ -3,7 +3,7 @@ kind: Deployment
 metadata:
   name: backend-demo-app-deployment
 spec:
-  replicas: 3
+  replicas: 2
   selector:
     matchLabels:
       app: backend-demo-app
@@ -15,14 +15,45 @@ spec:
       containers:
         - name: backend-demo-app
           image: mohdtalib/backend-demo-app:latest
+          # For production deployments, use a pinned tag (example):
+          # image: mohdtalib/backend-demo-app:1.0.0
+          imagePullPolicy: IfNotPresent
           ports:
             - containerPort: 9090
           env:
+            # Spring picks these MYSQL_* variables via application-k8s.yaml placeholders.
             - name: MYSQL_HOST
               value: mysql-service
             - name: MYSQL_PORT
               value: "3306"
+            - name: MYSQL_DB
+              value: message_db
             - name: MYSQL_USERNAME
-              value: root
+              valueFrom:
+                secretKeyRef:
+                  name: backend-demo-secrets
+                  key: mysql_username
             - name: MYSQL_PASSWORD
-              value: root
+              valueFrom:
+                secretKeyRef:
+                  name: backend-demo-secrets
+                  key: mysql_password
+          readinessProbe:
+            httpGet:
+              path: /actuator/health/readiness
+              port: 9090
+            initialDelaySeconds: 20
+            periodSeconds: 10
+          livenessProbe:
+            httpGet:
+              path: /actuator/health/liveness
+              port: 9090
+            initialDelaySeconds: 30
+            periodSeconds: 15
+          resources:
+            requests:
+              cpu: "100m"
+              memory: "256Mi"
+            limits:
+              cpu: "500m"
+              memory: "512Mi"

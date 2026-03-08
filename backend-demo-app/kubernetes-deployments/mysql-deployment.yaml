@@ -14,10 +14,14 @@ spec:
     spec:
       containers:
         - name: mysql
-          image: mysql:latest
+          image: mysql:8.4
+          imagePullPolicy: IfNotPresent
           env:
             - name: MYSQL_ROOT_PASSWORD
-              value: root
+              valueFrom:
+                secretKeyRef:
+                  name: backend-demo-secrets
+                  key: mysql_root_password
             - name: MYSQL_DATABASE
               value: message_db
           ports:
@@ -25,6 +29,13 @@ spec:
           volumeMounts:
             - name: mysql-storage
               mountPath: /var/lib/mysql  # Mount the volume here
+          resources:
+            requests:
+              cpu: "100m"
+              memory: "256Mi"
+            limits:
+              cpu: "500m"
+              memory: "512Mi"
 
       volumes:
         - name: mysql-storage
