@@ -1,9 +1,10 @@
 spring:
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: ${SPRING_DATASOURCE_URL:jdbc:mysql://mysql-service:3306/message_db}
-    username: ${SPRING_DATASOURCE_USERNAME:root}
-    password: ${SPRING_DATASOURCE_PASSWORD:root}
+    # Picks values from MYSQL_* env vars from deployment.
+    url: jdbc:mysql://${MYSQL_HOST:mysql-service}:${MYSQL_PORT:3306}/${MYSQL_DB:message_db}
+    username: ${MYSQL_USERNAME:root}
+    password: ${MYSQL_PASSWORD:root}
   jpa:
     show-sql: true
     hibernate:

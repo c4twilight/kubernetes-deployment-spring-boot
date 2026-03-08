@@ -14,26 +14,30 @@ spec:
     spec:
       containers:
         - name: backend-demo-app
-          image: mohdtalib/backend-demo-app:1.0.0
+          image: mohdtalib/backend-demo-app:latest
+          # For production deployments, use a pinned tag (example):
+          # image: mohdtalib/backend-demo-app:1.0.0
           imagePullPolicy: IfNotPresent
           ports:
             - containerPort: 9090
           env:
-            - name: SPRING_DATASOURCE_URL
-              valueFrom:
-                configMapKeyRef:
-                  name: backend-demo-config
-                  key: spring_datasource_url
-            - name: SPRING_DATASOURCE_USERNAME
-              valueFrom:
-                secretKeyRef:
-                  name: backend-demo-secrets
-                  key: spring_datasource_username
-            - name: SPRING_DATASOURCE_PASSWORD
+            # Spring picks these MYSQL_* variables via application-k8s.yaml placeholders.
+            - name: MYSQL_HOST
+              value: mysql-service
+            - name: MYSQL_PORT
+              value: "3306"
+            - name: MYSQL_DB
+              value: message_db
+            - name: MYSQL_USERNAME
               valueFrom:
                 secretKeyRef:
                   name: backend-demo-secrets
-                  key: spring_datasource_password
+                  key: mysql_username
+            - name: MYSQL_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: backend-demo-secrets
+                  key: mysql_password
           readinessProbe:
             httpGet:
               path: /actuator/health/readiness
